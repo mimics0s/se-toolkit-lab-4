@@ -18,6 +18,7 @@ function App() {
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState<string>("All")
 
   useEffect(() => {
     if (!token) return
@@ -87,6 +88,21 @@ function App() {
       {error && <p>Error: {error}</p>}
 
       {!loading && !error && (
+        <>
+        <div>
+          <label>Filter by type: </label>
+          <select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+          >
+            <option value="All">All</option>
+            {[...new Set(items.map(item => item.type))].map(type => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
         <table>
           <thead>
             <tr>
@@ -97,7 +113,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {items.map((item) => (
+            {items.filter(item => selectedType === "All" || item.type === selectedType).map((item) => (
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.type}</td>
@@ -107,6 +123,7 @@ function App() {
             ))}
           </tbody>
         </table>
+        </>
       )}
     </div>
   )
